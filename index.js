@@ -57,29 +57,36 @@ function App(){
   const completedTodos = todos.filter(todo => todo.isCompleted);
 
   return (
-    <>
-      <h2>Active Items</h2>
-      {activeTodos.map((todo, i) => (
-        <div className="todo" key={todo.id}>
-          <div><strong>{todo.text}</strong></div>
-          <div>Project: {todo.project}</div>
-          <div>Added: {todo.dateAdded}</div>
-          {todo.scheduledFor && <div>Scheduled: {todo.scheduledFor}</div>}
-          {todo.notes && <div>Notes: {todo.notes}</div>}
-        </div>
-      ))}
-      
-      <h2>Completed Items</h2>
-      {completedTodos.map((todo, i) => (
-        <div className="todo" key={todo.id}>
-          <div><strong>{todo.text}</strong></div>
-          <div>Project: {todo.project}</div>
-          <div>Added: {todo.dateAdded}</div>
-          {todo.dateCompleted && <div>Completed: {todo.dateCompleted}</div>}
-          {todo.notes && <div>Notes: {todo.notes}</div>}
-        </div>
-      ))}
-    </>
+    <div className="container">
+      <h1>Action Items</h1>
+      <div className="todo-list">
+        <h2>Active Items</h2>
+        {activeTodos.map((todo, i) => (
+          <div className="todo" key={todo.id}>
+            <div><strong>{todo.text}</strong></div>
+            <div>Project: {todo.project}</div>
+            <div>Added: {todo.dateAdded}</div>
+            {todo.scheduledFor && <div>Scheduled: {todo.scheduledFor}</div>}
+            {todo.notes && <div>Notes: {todo.notes}</div>}
+          </div>
+        ))}
+        
+        <h2>Completed Items</h2>
+        {completedTodos.length > 0 ? (
+          completedTodos.map((todo, i) => (
+            <div className="todo" key={todo.id}>
+              <div><strong>{todo.text}</strong></div>
+              <div>Project: {todo.project}</div>
+              <div>Added: {todo.dateAdded}</div>
+              {todo.dateCompleted && <div>Completed: {todo.dateCompleted}</div>}
+              {todo.notes && <div>Notes: {todo.notes}</div>}
+            </div>
+          ))
+        ) : (
+          <p>No completed items yet.</p>
+        )}
+      </div>
+    </div>
   );
 }
 
