@@ -60,7 +60,7 @@ function App(){
     <>
       <h2>Active Items</h2>
       {activeTodos.map((todo, i) => (
-        <div key={todo.id}>
+        <div className="todo" key={todo.id}>
           <div><strong>{todo.text}</strong></div>
           <div>Project: {todo.project}</div>
           <div>Added: {todo.dateAdded}</div>
@@ -71,7 +71,7 @@ function App(){
       
       <h2>Completed Items</h2>
       {completedTodos.map((todo, i) => (
-        <div key={todo.id}>
+        <div className="todo" key={todo.id}>
           <div><strong>{todo.text}</strong></div>
           <div>Project: {todo.project}</div>
           <div>Added: {todo.dateAdded}</div>

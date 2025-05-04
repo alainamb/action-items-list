@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <title>Action Items</title>
 
+    <link rel="stylesheet" type="text/css" href="styles.css">
+
     <!-- don't use this in production: -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   </head>
@@ -14,9 +16,9 @@
     <!-- we will put our react component inside this div -->
     <div id="root"></div>
 
-    <!-- load react -->
-    <script src="https://unpkg.com/react/umd/react.development.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom/umd/react-dom.development.js" crossorigin></script>
+    <!-- load react - using specific versions that work -->
+    <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
 
     <!-- load our react component. -->
     <script src="index.js" defer type="text/babel"></script>
