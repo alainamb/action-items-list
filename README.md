@@ -1,6 +1,6 @@
 ## Action Items List
 
-A simple yet powerful task management application built with React, featuring project organization, scheduling capabilities, and data persistence.
+A simple yet powerful task management application built with React that runs entirely in your browser using local storage for data persistence. This version requires no server setup beyond a basic local web server and stores all data locally on your device.
 
 ## Description
 
