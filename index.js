@@ -1,5 +1,7 @@
 // Access the data manager from the global window object
 const dataManager = window.dataManager;
+// Access the ProjectSelect component from the global window object
+const ProjectSelect = window.ProjectSelect;
 
 function App(){
   const [todos, setTodos] = React.useState(() => {
@@ -67,18 +69,48 @@ function App(){
     dataManager.saveTodos(todos);
   }, [todos]);
 
+  // Import/Export state
+  const [importError, setImportError] = React.useState('');
+  
+  // Search and filter state
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [projectFilter, setProjectFilter] = React.useState('');
+  
+  // Get unique project names from all todos
+  const getUniqueProjects = () => {
+    const projects = todos
+      .map(todo => todo.project)
+      .filter(project => project && project !== 'Unassigned');
+    return [...new Set(projects)].sort();
+  };
+
+  // Filter todos based on search and project filter
+  const filterTodos = (todosToFilter) => {
+    return todosToFilter.filter(todo => {
+      const matchesSearch = searchTerm === '' || 
+        todo.text.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        todo.notes.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        todo.project.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesProject = projectFilter === '' || 
+        todo.project === projectFilter;
+      
+      return matchesSearch && matchesProject;
+    });
+  };
+
   // Separate and sort todos by categories
-  const scheduledTodos = todos
-    .filter(todo => !todo.isCompleted && todo.scheduledFor)
-    .sort((a, b) => new Date(a.scheduledFor) - new Date(b.scheduledFor));
+  const scheduledTodos = filterTodos(
+    todos.filter(todo => !todo.isCompleted && todo.scheduledFor)
+  ).sort((a, b) => new Date(a.scheduledFor) - new Date(b.scheduledFor));
   
-  const notScheduledTodos = todos
-    .filter(todo => !todo.isCompleted && !todo.scheduledFor)
-    .sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
+  const notScheduledTodos = filterTodos(
+    todos.filter(todo => !todo.isCompleted && !todo.scheduledFor)
+  ).sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
   
-  const completedTodos = todos
-    .filter(todo => todo.isCompleted)
-    .sort((a, b) => new Date(b.dateCompleted) - new Date(a.dateCompleted));
+  const completedTodos = filterTodos(
+    todos.filter(todo => todo.isCompleted)
+  ).sort((a, b) => new Date(b.dateCompleted) - new Date(a.dateCompleted));
 
   // Edit state
   const [editingId, setEditingId] = React.useState(null);
@@ -86,9 +118,6 @@ function App(){
   const [editProject, setEditProject] = React.useState('');
   const [editScheduledFor, setEditScheduledFor] = React.useState('');
   const [editNotes, setEditNotes] = React.useState('');
-
-  // Import/Export state
-  const [importError, setImportError] = React.useState('');
 
   // Handler for deleting a todo from Scheduled/Not Scheduled
   const removeTodo = (id) => {
@@ -240,11 +269,36 @@ function App(){
       
       <div className="form-container">
         <h2>Add New Action Item</h2>
-        <Form todos={todos} setTodos={setTodos} />
+        <Form todos={todos} setTodos={setTodos} projects={getUniqueProjects()} />
       </div>
 
       <div className="todo-list">
         <h2>Action Items</h2>
+        <div className="filter-controls">
+          <div className="search-box">
+            <input 
+              type="text"
+              className="input search-input"
+              placeholder="Search action items and notes..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className="filter-box">
+            <select 
+              className="input project-filter"
+              value={projectFilter}
+              onChange={e => setProjectFilter(e.target.value)}
+            >
+              <option value="">All Projects</option>
+              {getUniqueProjects().map((project, index) => (
+                <option key={index} value={project}>
+                  {project}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
         <h3>Scheduled</h3>
         {scheduledTodos.length > 0 ? (
           scheduledTodos.map((todo) => (
@@ -263,11 +317,10 @@ function App(){
                   </div>
                   <div className="form-group">
                     <label>Project</label>
-                    <input 
-                      type="text"
-                      className="input"
+                    <ProjectSelect 
                       value={editProject}
-                      onChange={e => setEditProject(e.target.value)}
+                      onChange={setEditProject}
+                      projects={getUniqueProjects()}
                     />
                   </div>
                   <div className="form-group">
@@ -356,11 +409,10 @@ function App(){
                   </div>
                   <div className="form-group">
                     <label>Project</label>
-                    <input 
-                      type="text"
-                      className="input"
+                    <ProjectSelect 
                       value={editProject}
-                      onChange={e => setEditProject(e.target.value)}
+                      onChange={setEditProject}
+                      projects={getUniqueProjects()}
                     />
                   </div>
                   <div className="form-group">
