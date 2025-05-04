@@ -1,56 +1,71 @@
+// Access the data manager from the global window object
+const dataManager = window.dataManager;
+
 function App(){
-  const [todos, setTodos] = React.useState([
-    {
-      id: 1,
-      text: 'ASTM F43 Membership Report',
-      project: 'ASTM F43 Membership Secretary',
-      dateAdded: '2025-05-04',
-      scheduledFor: '2025-05-05',
-      dateCompleted: null,
-      isCompleted: false,
-      notes: 'The membership report needs to be ready for our monthly meeting on Tuesday, May 6.'
-    },
-    {
-      id: 2,
-      text: 'TR18 - Final Project Assignment and Class Agenda',
-      project: 'TR18 Traducción Inversa (ES>EN) 2025-2',
-      dateAdded: '2025-05-04',
-      scheduledFor: '2025-05-05',
-      dateCompleted: null,
-      isCompleted: false,
-      notes: 'These materials need to be ready for our next class period on Tuesday, May 6.'
-    },
-    {
-      id: 3,
-      text: 'TR18 2026-1 - Guía de aprendizaje',
-      project: 'TR18 Traducción Inversa (ES>EN) 2026-1',
-      dateAdded: '2025-05-04',
-      scheduledFor: '2025-05-05',
-      dateCompleted: null,
-      isCompleted: false,
-      notes: 'Due to the program chair on Monday, May 5'
-    },
-    {
-      id: 4,
-      text: 'TR14 2026-1 - Guía de aprendizaje',
-      project: 'TR14 Traducción Comercial y Publicitaria (EN>ES) 2026-1',
-      dateAdded: '2025-05-04',
-      scheduledFor: '2025-05-05',
-      dateCompleted: null,
-      isCompleted: false,
-      notes: 'Due to the program chair on Monday, May 5'
-    },
-    {
-      id: 5,
-      text: 'TR35 2026-1 - Guía de aprendizaje',
-      project: 'TR35 Lengua B: Ingles de negocios II 2026-1',
-      dateAdded: '2025-05-04',
-      scheduledFor: '2025-05-05',
-      dateCompleted: null,
-      isCompleted: false,
-      notes: 'Due to the program chair on Monday, May 5'
+  const [todos, setTodos] = React.useState(() => {
+    const savedTodos = dataManager.loadTodos();
+    if (savedTodos) {
+      return savedTodos;
     }
-  ]);
+    // Default initial data if no saved data exists
+    return [
+      {
+        id: 1,
+        text: 'ASTM F43 Membership Report',
+        project: 'ASTM F43 Membership Secretary',
+        dateAdded: '2025-05-04',
+        scheduledFor: '2025-05-05',
+        dateCompleted: null,
+        isCompleted: false,
+        notes: 'The membership report needs to be ready for our monthly meeting on Tuesday, May 6.'
+      },
+      {
+        id: 2,
+        text: 'TR18 - Final Project Assignment and Class Agenda',
+        project: 'TR18 Traducción Inversa (ES>EN) 2025-2',
+        dateAdded: '2025-05-04',
+        scheduledFor: '2025-05-05',
+        dateCompleted: null,
+        isCompleted: false,
+        notes: 'These materials need to be ready for our next class period on Tuesday, May 6.'
+      },
+      {
+        id: 3,
+        text: 'TR18 2026-1 - Guía de aprendizaje',
+        project: 'TR18 Traducción Inversa (ES>EN) 2026-1',
+        dateAdded: '2025-05-04',
+        scheduledFor: '2025-05-05',
+        dateCompleted: null,
+        isCompleted: false,
+        notes: 'Due to the program chair on Monday, May 5'
+      },
+      {
+        id: 4,
+        text: 'TR14 2026-1 - Guía de aprendizaje',
+        project: 'TR14 Traducción Comercial y Publicitaria (EN>ES) 2026-1',
+        dateAdded: '2025-05-04',
+        scheduledFor: '2025-05-05',
+        dateCompleted: null,
+        isCompleted: false,
+        notes: 'Due to the program chair on Monday, May 5'
+      },
+      {
+        id: 5,
+        text: 'TR35 2026-1 - Guía de aprendizaje',
+        project: 'TR35 Lengua B: Ingles de negocios II 2026-1',
+        dateAdded: '2025-05-04',
+        scheduledFor: '2025-05-05',
+        dateCompleted: null,
+        isCompleted: false,
+        notes: 'Due to the program chair on Monday, May 5'
+      }
+    ];
+  });
+
+  // Save todos to localStorage whenever they change
+  React.useEffect(() => {
+    dataManager.saveTodos(todos);
+  }, [todos]);
 
   // Separate active and completed todos
   const activeTodos = todos.filter(todo => !todo.isCompleted);
@@ -63,9 +78,11 @@ function App(){
   const [editScheduledFor, setEditScheduledFor] = React.useState('');
   const [editNotes, setEditNotes] = React.useState('');
 
+  // Import/Export state
+  const [importError, setImportError] = React.useState('');
+
   // Handler for deleting a todo
   const removeTodo = (id) => {
-    // Filter out the todo with the matching id
     const updatedTodos = todos.filter(todo => todo.id !== id);
     setTodos(updatedTodos);
   };
@@ -133,12 +150,78 @@ function App(){
       return todo;
     });
     setTodos(updatedTodos);
-    cancelEdit(); // Reset edit state
+    cancelEdit();
+  };
+
+  // Handler for exporting todos
+  const handleExportCSV = () => {
+    dataManager.exportToCSV(todos);
+  };
+
+  const handleExportJSON = () => {
+    dataManager.exportToJSON(todos);
+  };
+
+  // Handler for importing todos
+  const handleImport = (event, type) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const importFunction = type === 'csv' ? dataManager.importFromCSV : dataManager.importFromJSON;
+    
+    importFunction(file, 
+      (importedTodos) => {
+        setTodos(importedTodos);
+        setImportError('');
+        // Reset the file input
+        event.target.value = '';
+      },
+      (error) => {
+        setImportError(`Failed to import: ${error.message}`);
+        event.target.value = '';
+      }
+    );
   };
 
   return (
     <div className="container">
       <h1>Action Item List</h1>
+      
+      {/* Import/Export Controls */}
+      <div className="data-controls">
+        <div className="export-buttons">
+          <button onClick={handleExportCSV} className="export-button">
+            Export to CSV
+          </button>
+          <button onClick={handleExportJSON} className="export-button">
+            Export to JSON
+          </button>
+        </div>
+        
+        <div className="import-controls">
+          <label className="import-button">
+            Import CSV
+            <input 
+              type="file" 
+              accept=".csv" 
+              onChange={(e) => handleImport(e, 'csv')}
+              style={{ display: 'none' }}
+            />
+          </label>
+          <label className="import-button">
+            Import JSON
+            <input 
+              type="file" 
+              accept=".json" 
+              onChange={(e) => handleImport(e, 'json')}
+              style={{ display: 'none' }}
+            />
+          </label>
+        </div>
+        
+        {importError && <div className="import-error">{importError}</div>}
+      </div>
+
       <div className="todo-list">
         <h2>Action Items</h2>
         

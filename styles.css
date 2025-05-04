@@ -245,3 +245,68 @@ h3 {
 .cancel-button:hover {
   background-color: #555555;
 }
+
+/* Import/Export Controls */
+.data-controls {
+  background: white;
+  padding: 20px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.export-buttons, .import-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.export-button, .import-button {
+  background-color: #209cee;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  transition: background-color 0.2s ease;
+  display: inline-block;
+}
+
+.export-button:hover, .import-button:hover {
+  background-color: #1992d4;
+}
+
+.export-button:active, .import-button:active {
+  transform: translateY(1px);
+}
+
+.import-button input[type="file"] {
+  display: none;
+}
+
+.import-error {
+  color: #ff4444;
+  font-size: 14px;
+  margin-top: 10px;
+  padding: 8px;
+  background-color: #ffeeee;
+  border-radius: 4px;
+  border: 1px solid #ffcccc;
+}
+
+@media (min-width: 768px) {
+  .data-controls {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .export-buttons, .import-controls {
+    flex-wrap: nowrap;
+  }
+}
