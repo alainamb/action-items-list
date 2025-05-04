@@ -13,53 +13,33 @@ function App(){
     return [
       {
         id: 1,
-        text: 'ASTM F43 Membership Report',
-        project: 'ASTM F43 Membership Secretary',
-        dateAdded: '2025-05-04',
+        text: 'Have some coffee and read the news',
+        project: 'Morning routine',
+        dateAdded: '2025-05-05',
         scheduledFor: '2025-05-05',
         dateCompleted: null,
         isCompleted: false,
-        notes: 'The membership report needs to be ready for our monthly meeting on Tuesday, May 6.'
+        notes: 'Accompany coffee with a healthy breakfast'
       },
       {
         id: 2,
-        text: 'TR18 - Final Project Assignment and Class Agenda',
-        project: 'TR18 Traducción Inversa (ES>EN) 2025-2',
-        dateAdded: '2025-05-04',
+        text: 'Complete this part of the important work project',
+        project: 'Important work project',
+        dateAdded: '2025-05-05',
         scheduledFor: '2025-05-05',
         dateCompleted: null,
         isCompleted: false,
-        notes: 'These materials need to be ready for our next class period on Tuesday, May 6.'
+        notes: 'Keep these dependencies in mind while completing this part: dependency 1 and dependency 2'
       },
       {
         id: 3,
-        text: 'TR18 2026-1 - Guía de aprendizaje',
-        project: 'TR18 Traducción Inversa (ES>EN) 2026-1',
-        dateAdded: '2025-05-04',
+        text: 'Exercise',
+        project: 'Healthy body and mind',
+        dateAdded: '2025-05-05',
         scheduledFor: '2025-05-05',
         dateCompleted: null,
         isCompleted: false,
-        notes: 'Due to the program chair on Monday, May 5'
-      },
-      {
-        id: 4,
-        text: 'TR14 2026-1 - Guía de aprendizaje',
-        project: 'TR14 Traducción Comercial y Publicitaria (EN>ES) 2026-1',
-        dateAdded: '2025-05-04',
-        scheduledFor: '2025-05-05',
-        dateCompleted: null,
-        isCompleted: false,
-        notes: 'Due to the program chair on Monday, May 5'
-      },
-      {
-        id: 5,
-        text: 'TR35 2026-1 - Guía de aprendizaje',
-        project: 'TR35 Lengua B: Ingles de negocios II 2026-1',
-        dateAdded: '2025-05-04',
-        scheduledFor: '2025-05-05',
-        dateCompleted: null,
-        isCompleted: false,
-        notes: 'Due to the program chair on Monday, May 5'
+        notes: 'Exercise for today is a boxing class'
       }
     ];
   });
