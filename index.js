@@ -62,6 +62,13 @@ function App(){
   const [scheduledFor, setScheduledFor] = React.useState('');
   const [notes, setNotes] = React.useState('');
 
+  // Edit state
+  const [editingId, setEditingId] = React.useState(null);
+  const [editText, setEditText] = React.useState('');
+  const [editProject, setEditProject] = React.useState('');
+  const [editScheduledFor, setEditScheduledFor] = React.useState('');
+  const [editNotes, setEditNotes] = React.useState('');
+
   const handleSubmit = (e) => {
     e.preventDefault();
     
@@ -89,6 +96,79 @@ function App(){
     setProject('');
     setScheduledFor('');
     setNotes('');
+  };
+
+  // Handler for deleting a todo
+  const removeTodo = (id) => {
+    // Filter out the todo with the matching id
+    const updatedTodos = todos.filter(todo => todo.id !== id);
+    setTodos(updatedTodos);
+  };
+
+  // Handler for completing a todo
+  const completeTodo = (id) => {
+    const updatedTodos = todos.map(todo => {
+      if (todo.id === id) {
+        return {
+          ...todo,
+          isCompleted: true,
+          dateCompleted: new Date().toISOString().split('T')[0]
+        };
+      }
+      return todo;
+    });
+    setTodos(updatedTodos);
+  };
+
+  // Handler for restoring a completed todo back to active
+  const restoreTodo = (id) => {
+    const updatedTodos = todos.map(todo => {
+      if (todo.id === id) {
+        return {
+          ...todo,
+          isCompleted: false,
+          dateCompleted: null
+        };
+      }
+      return todo;
+    });
+    setTodos(updatedTodos);
+  };
+
+  // Handler for starting edit mode
+  const startEdit = (todo) => {
+    setEditingId(todo.id);
+    setEditText(todo.text);
+    setEditProject(todo.project);
+    setEditScheduledFor(todo.scheduledFor || '');
+    setEditNotes(todo.notes);
+  };
+
+  // Handler for canceling edit
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditText('');
+    setEditProject('');
+    setEditScheduledFor('');
+    setEditNotes('');
+  };
+
+  // Handler for saving edit
+  const saveEdit = (id) => {
+    const updatedTodos = todos.map(todo => {
+      if (todo.id === id) {
+        return {
+          ...todo,
+          text: editText,
+          project: editProject,
+          scheduledFor: editScheduledFor || null,
+          notes: editNotes
+        };
+      }
+      return todo;
+    });
+    setTodos(updatedTodos);
+    cancelEdit(); // Reset edit state
   };
 
   return (
@@ -150,23 +230,110 @@ function App(){
 
         {activeTodos.map((todo) => (
           <div className="todo" key={todo.id}>
-            <div><strong>{todo.text}</strong></div>
-            <div>Project: {todo.project}</div>
-            <div>Added: {todo.dateAdded}</div>
-            {todo.scheduledFor && <div>Scheduled: {todo.scheduledFor}</div>}
-            {todo.notes && <div>Notes: {todo.notes}</div>}
+            {editingId === todo.id ? (
+              // Edit form
+              <div className="edit-form">
+                <div className="form-group">
+                  <label>Action Item</label>
+                  <input 
+                    type="text"
+                    className="input"
+                    value={editText}
+                    onChange={e => setEditText(e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Project</label>
+                  <input 
+                    type="text"
+                    className="input"
+                    value={editProject}
+                    onChange={e => setEditProject(e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Scheduled For</label>
+                  <input 
+                    type="date"
+                    className="input"
+                    value={editScheduledFor}
+                    onChange={e => setEditScheduledFor(e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Notes</label>
+                  <textarea 
+                    className="input"
+                    value={editNotes}
+                    onChange={e => setEditNotes(e.target.value)}
+                  />
+                </div>
+                <div className="todo-actions">
+                  <button 
+                    onClick={() => saveEdit(todo.id)}
+                    className="save-button"
+                  >
+                    Save
+                  </button>
+                  <button 
+                    onClick={cancelEdit}
+                    className="cancel-button"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              // View mode
+              <>
+                <div><strong>{todo.text}</strong></div>
+                <div>Project: {todo.project}</div>
+                <div>Added: {todo.dateAdded}</div>
+                {todo.scheduledFor && <div>Scheduled: {todo.scheduledFor}</div>}
+                {todo.notes && <div>Notes: {todo.notes}</div>}
+                <div className="todo-actions">
+                  <button 
+                    onClick={() => removeTodo(todo.id)}
+                    className="delete-button"
+                  >
+                    Delete
+                  </button>
+                  <button 
+                    onClick={() => startEdit(todo)}
+                    className="edit-button"
+                  >
+                    Edit
+                  </button>
+                  <button 
+                    onClick={() => completeTodo(todo.id)}
+                    className="complete-button"
+                  >
+                    Complete
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         ))}
         
         <h2>Completed Items</h2>
         {completedTodos.length > 0 ? (
           completedTodos.map((todo) => (
-            <div className="todo" key={todo.id}>
+            <div className="todo completed" key={todo.id}>
               <div><strong>{todo.text}</strong></div>
               <div>Project: {todo.project}</div>
               <div>Added: {todo.dateAdded}</div>
+              {todo.scheduledFor && <div>Scheduled: {todo.scheduledFor}</div>}
               {todo.dateCompleted && <div>Completed: {todo.dateCompleted}</div>}
               {todo.notes && <div>Notes: {todo.notes}</div>}
+              <div className="todo-actions">
+                <button 
+                  onClick={() => restoreTodo(todo.id)}
+                  className="restore-button"
+                >
+                  Restore
+                </button>
+              </div>
             </div>
           ))
         ) : (

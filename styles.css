@@ -160,3 +160,88 @@ h3 {
 .submit-button:active {
   transform: translateY(1px);
 }
+
+/* Todo action buttons */
+.todo-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.todo-actions button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-family: Arial, sans-serif;
+}
+
+.delete-button {
+  background-color: #ff4444;
+  color: white;
+}
+
+.delete-button:hover {
+  background-color: #dc3333;
+}
+
+.edit-button {
+  background-color: #ffaa00;
+  color: white;
+}
+
+.edit-button:hover {
+  background-color: #e69900;
+}
+
+.complete-button {
+  background-color: #44aa44;
+  color: white;
+}
+
+.complete-button:hover {
+  background-color: #339933;
+}
+
+/* Completed todo style */
+.todo.completed {
+  opacity: 0.9;
+  background-color: #f0f0f0;
+  border-left: 4px solid #44aa44;
+}
+
+.restore-button {
+  background-color: #4488ff;
+  color: white;
+}
+
+.restore-button:hover {
+  background-color: #3377ee;
+}
+
+/* Edit form styles */
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.save-button {
+  background-color: #209cee;
+  color: white;
+}
+
+.save-button:hover {
+  background-color: #1992d4;
+}
+
+.cancel-button {
+  background-color: #666666;
+  color: white;
+}
+
+.cancel-button:hover {
+  background-color: #555555;
+}
