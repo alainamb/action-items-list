@@ -35,11 +35,9 @@ function Form({ todos, setTodos }) {
     };
   
     return (
-      <form onSubmit={handleSubmit} className="todo-form">
-        <h3>Add New Action Item</h3>
-        
+      <form onSubmit={handleSubmit} className="todo-form">        
         <div className="form-group">
-          <label>Action Item *</label>
+          <label>Action Item</label>
           <input 
             type="text"
             className="input"
@@ -62,7 +60,7 @@ function Form({ todos, setTodos }) {
         </div>
   
         <div className="form-group">
-          <label>Scheduled For</label>
+          <label>Scheduled for</label>
           <input 
             type="date"
             className="input"

@@ -50,6 +50,10 @@ code {
   color: #333;
 }
 
+.todo-list h2 {
+  margin: 0 0 15px 0;
+}
+
 .input{
   width: 100%;
   box-sizing: border-box;
@@ -76,14 +80,10 @@ textarea.input {
 }
 
 h1 {
-  text-align: center;
   color: #333;
-  margin: 0 0 20px 0;
-  padding: 20px;
-  background: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  border-radius: 4px;
+  margin: 0;
   font-size: 32px;
+  flex: 1;
 }
 
 h2 {
@@ -95,8 +95,8 @@ h2 {
 }
 
 h3 {
-  color: #333;
-  margin: 0 0 15px 0;
+  color: #444;
+  margin: 20px 0 15px 0;
   font-size: 20px;
 }
 
@@ -114,13 +114,90 @@ h3 {
   box-sizing: border-box;
 }
 
+/* Header Box */
+.header-box {
+  background: #e8e8e8;
+  padding: 20px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Import/Export Controls */
+.data-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.export-buttons, .import-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.export-button, .import-button {
+  background-color: #209cee;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  transition: background-color 0.2s ease;
+  display: inline-block;
+}
+
+.export-button:hover, .import-button:hover {
+  background-color: #1992d4;
+}
+
+.export-button:active, .import-button:active {
+  transform: translateY(1px);
+}
+
+.import-button input[type="file"] {
+  display: none;
+}
+
+.import-error {
+  color: #ff4444;
+  font-size: 14px;
+  margin-top: 10px;
+  padding: 8px;
+  background-color: #ffeeee;
+  border-radius: 4px;
+  border: 1px solid #ffcccc;
+}
+
+/* Form container styles */
+.form-container {
+  background: #e8e8e8;
+  padding: 20px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+
+.form-container h2 {
+  color: #444;
+  margin: 0 0 15px 0;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #ddd;
+  font-size: 22px;
+}
+
 /* Form styles */
 .todo-form {
   background: #fff;
   padding: 20px;
   border-radius: 6px;
-  margin-top: 20px;
-  margin-bottom: 30px;
+  margin-top: 0;
+  margin-bottom: 0;
   box-shadow: 0 1px 3px rgba(0,0,0,0.12);
   display: flex;
   flex-direction: column;
@@ -212,12 +289,12 @@ h3 {
   border-left: 4px solid #44aa44;
 }
 
-.restore-button {
+.restore-button, .clear-button {
   background-color: #4488ff;
   color: white;
 }
 
-.restore-button:hover {
+.restore-button:hover, .clear-button:hover {
   background-color: #3377ee;
 }
 
@@ -246,67 +323,30 @@ h3 {
   background-color: #555555;
 }
 
-/* Import/Export Controls */
-.data-controls {
-  background: white;
-  padding: 20px;
-  border-radius: 6px;
-  margin-bottom: 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.export-buttons, .import-controls {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.export-button, .import-button {
-  background-color: #209cee;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  font-size: 14px;
-  cursor: pointer;
-  font-family: Arial, sans-serif;
-  transition: background-color 0.2s ease;
-  display: inline-block;
-}
-
-.export-button:hover, .import-button:hover {
-  background-color: #1992d4;
-}
-
-.export-button:active, .import-button:active {
-  transform: translateY(1px);
-}
-
-.import-button input[type="file"] {
-  display: none;
-}
-
-.import-error {
-  color: #ff4444;
-  font-size: 14px;
-  margin-top: 10px;
-  padding: 8px;
-  background-color: #ffeeee;
-  border-radius: 4px;
-  border: 1px solid #ffcccc;
-}
-
 @media (min-width: 768px) {
+  .header-box {
+    flex-direction: row;
+  }
+  
   .data-controls {
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
+    gap: 10px;
   }
   
   .export-buttons, .import-controls {
     flex-wrap: nowrap;
+  }
+}
+
+@media (max-width: 767px) {
+  .header-box {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  h1 {
+    text-align: center;
   }
 }

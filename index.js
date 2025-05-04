@@ -67,9 +67,18 @@ function App(){
     dataManager.saveTodos(todos);
   }, [todos]);
 
-  // Separate active and completed todos
-  const activeTodos = todos.filter(todo => !todo.isCompleted);
-  const completedTodos = todos.filter(todo => todo.isCompleted);
+  // Separate and sort todos by categories
+  const scheduledTodos = todos
+    .filter(todo => !todo.isCompleted && todo.scheduledFor)
+    .sort((a, b) => new Date(a.scheduledFor) - new Date(b.scheduledFor));
+  
+  const notScheduledTodos = todos
+    .filter(todo => !todo.isCompleted && !todo.scheduledFor)
+    .sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
+  
+  const completedTodos = todos
+    .filter(todo => todo.isCompleted)
+    .sort((a, b) => new Date(b.dateCompleted) - new Date(a.dateCompleted));
 
   // Edit state
   const [editingId, setEditingId] = React.useState(null);
@@ -81,7 +90,7 @@ function App(){
   // Import/Export state
   const [importError, setImportError] = React.useState('');
 
-  // Handler for deleting a todo
+  // Handler for deleting a todo from Scheduled/Not Scheduled
   const removeTodo = (id) => {
     const updatedTodos = todos.filter(todo => todo.id !== id);
     setTodos(updatedTodos);
@@ -114,6 +123,12 @@ function App(){
       }
       return todo;
     });
+    setTodos(updatedTodos);
+  };
+
+  // Handler for clearing a todo from the completed list
+  const clearTodo = (id) => {
+    const updatedTodos = todos.filter(todo => todo.id !== id);
     setTodos(updatedTodos);
   };
 
@@ -185,137 +200,238 @@ function App(){
 
   return (
     <div className="container">
-      <h1>Action Item List</h1>
+      <div className="header-box">
+        <h1>Action Item List</h1>
+        {/* Import/Export Controls */}
+        <div className="data-controls">
+          <div className="export-buttons">
+            <button onClick={handleExportCSV} className="export-button">
+              Export to CSV
+            </button>
+            <button onClick={handleExportJSON} className="export-button">
+              Export to JSON
+            </button>
+          </div>
+          
+          <div className="import-controls">
+            <label className="import-button">
+              Import CSV
+              <input 
+                type="file" 
+                accept=".csv" 
+                onChange={(e) => handleImport(e, 'csv')}
+                style={{ display: 'none' }}
+              />
+            </label>
+            <label className="import-button">
+              Import JSON
+              <input 
+                type="file" 
+                accept=".json" 
+                onChange={(e) => handleImport(e, 'json')}
+                style={{ display: 'none' }}
+              />
+            </label>
+          </div>
+          
+          {importError && <div className="import-error">{importError}</div>}
+        </div>
+      </div>
       
-      {/* Import/Export Controls */}
-      <div className="data-controls">
-        <div className="export-buttons">
-          <button onClick={handleExportCSV} className="export-button">
-            Export to CSV
-          </button>
-          <button onClick={handleExportJSON} className="export-button">
-            Export to JSON
-          </button>
-        </div>
-        
-        <div className="import-controls">
-          <label className="import-button">
-            Import CSV
-            <input 
-              type="file" 
-              accept=".csv" 
-              onChange={(e) => handleImport(e, 'csv')}
-              style={{ display: 'none' }}
-            />
-          </label>
-          <label className="import-button">
-            Import JSON
-            <input 
-              type="file" 
-              accept=".json" 
-              onChange={(e) => handleImport(e, 'json')}
-              style={{ display: 'none' }}
-            />
-          </label>
-        </div>
-        
-        {importError && <div className="import-error">{importError}</div>}
+      <div className="form-container">
+        <h2>Add New Action Item</h2>
+        <Form todos={todos} setTodos={setTodos} />
       </div>
 
       <div className="todo-list">
         <h2>Action Items</h2>
+        <h3>Scheduled</h3>
+        {scheduledTodos.length > 0 ? (
+          scheduledTodos.map((todo) => (
+            <div className="todo" key={todo.id}>
+              {editingId === todo.id ? (
+                // Edit form
+                <div className="edit-form">
+                  <div className="form-group">
+                    <label>Action Item</label>
+                    <input 
+                      type="text"
+                      className="input"
+                      value={editText}
+                      onChange={e => setEditText(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Project</label>
+                    <input 
+                      type="text"
+                      className="input"
+                      value={editProject}
+                      onChange={e => setEditProject(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Scheduled for</label>
+                    <input 
+                      type="date"
+                      className="input"
+                      value={editScheduledFor}
+                      onChange={e => setEditScheduledFor(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Notes</label>
+                    <textarea 
+                      className="input"
+                      value={editNotes}
+                      onChange={e => setEditNotes(e.target.value)}
+                    />
+                  </div>
+                  <div className="todo-actions">
+                    <button 
+                      onClick={() => saveEdit(todo.id)}
+                      className="save-button"
+                    >
+                      Save
+                    </button>
+                    <button 
+                      onClick={cancelEdit}
+                      className="cancel-button"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                // View mode
+                <>
+                  <div><strong>{todo.text}</strong></div>
+                  <div>Project: {todo.project}</div>
+                  <div>Added: {todo.dateAdded}</div>
+                  {todo.scheduledFor && <div>Scheduled: {todo.scheduledFor}</div>}
+                  {todo.notes && <div>Notes: {todo.notes}</div>}
+                  <div className="todo-actions">
+                    <button 
+                      onClick={() => removeTodo(todo.id)}
+                      className="delete-button"
+                    >
+                      Delete
+                    </button>
+                    <button 
+                      onClick={() => startEdit(todo)}
+                      className="edit-button"
+                    >
+                      Edit
+                    </button>
+                    <button 
+                      onClick={() => completeTodo(todo.id)}
+                      className="complete-button"
+                    >
+                      Complete
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          ))
+        ) : (
+          <p>No scheduled action items.</p>
+        )}
         
-        <Form todos={todos} setTodos={setTodos} />
-
-        {activeTodos.map((todo) => (
-          <div className="todo" key={todo.id}>
-            {editingId === todo.id ? (
-              // Edit form
-              <div className="edit-form">
-                <div className="form-group">
-                  <label>Action Item</label>
-                  <input 
-                    type="text"
-                    className="input"
-                    value={editText}
-                    onChange={e => setEditText(e.target.value)}
-                  />
+        <h3>Not Scheduled</h3>
+        {notScheduledTodos.length > 0 ? (
+          notScheduledTodos.map((todo) => (
+            <div className="todo" key={todo.id}>
+              {editingId === todo.id ? (
+                // Edit form
+                <div className="edit-form">
+                  <div className="form-group">
+                    <label>Action Item</label>
+                    <input 
+                      type="text"
+                      className="input"
+                      value={editText}
+                      onChange={e => setEditText(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Project</label>
+                    <input 
+                      type="text"
+                      className="input"
+                      value={editProject}
+                      onChange={e => setEditProject(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Scheduled for</label>
+                    <input 
+                      type="date"
+                      className="input"
+                      value={editScheduledFor}
+                      onChange={e => setEditScheduledFor(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Notes</label>
+                    <textarea 
+                      className="input"
+                      value={editNotes}
+                      onChange={e => setEditNotes(e.target.value)}
+                    />
+                  </div>
+                  <div className="todo-actions">
+                    <button 
+                      onClick={() => saveEdit(todo.id)}
+                      className="save-button"
+                    >
+                      Save
+                    </button>
+                    <button 
+                      onClick={cancelEdit}
+                      className="cancel-button"
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </div>
-                <div className="form-group">
-                  <label>Project</label>
-                  <input 
-                    type="text"
-                    className="input"
-                    value={editProject}
-                    onChange={e => setEditProject(e.target.value)}
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Scheduled For</label>
-                  <input 
-                    type="date"
-                    className="input"
-                    value={editScheduledFor}
-                    onChange={e => setEditScheduledFor(e.target.value)}
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Notes</label>
-                  <textarea 
-                    className="input"
-                    value={editNotes}
-                    onChange={e => setEditNotes(e.target.value)}
-                  />
-                </div>
-                <div className="todo-actions">
-                  <button 
-                    onClick={() => saveEdit(todo.id)}
-                    className="save-button"
-                  >
-                    Save
-                  </button>
-                  <button 
-                    onClick={cancelEdit}
-                    className="cancel-button"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            ) : (
-              // View mode
-              <>
-                <div><strong>{todo.text}</strong></div>
-                <div>Project: {todo.project}</div>
-                <div>Added: {todo.dateAdded}</div>
-                {todo.scheduledFor && <div>Scheduled: {todo.scheduledFor}</div>}
-                {todo.notes && <div>Notes: {todo.notes}</div>}
-                <div className="todo-actions">
-                  <button 
-                    onClick={() => removeTodo(todo.id)}
-                    className="delete-button"
-                  >
-                    Delete
-                  </button>
-                  <button 
-                    onClick={() => startEdit(todo)}
-                    className="edit-button"
-                  >
-                    Edit
-                  </button>
-                  <button 
-                    onClick={() => completeTodo(todo.id)}
-                    className="complete-button"
-                  >
-                    Complete
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        ))}
+              ) : (
+                // View mode
+                <>
+                  <div><strong>{todo.text}</strong></div>
+                  <div>Project: {todo.project}</div>
+                  <div>Added: {todo.dateAdded}</div>
+                  {todo.scheduledFor && <div>Scheduled: {todo.scheduledFor}</div>}
+                  {todo.notes && <div>Notes: {todo.notes}</div>}
+                  <div className="todo-actions">
+                    <button 
+                      onClick={() => removeTodo(todo.id)}
+                      className="delete-button"
+                    >
+                      Delete
+                    </button>
+                    <button 
+                      onClick={() => startEdit(todo)}
+                      className="edit-button"
+                    >
+                      Edit
+                    </button>
+                    <button 
+                      onClick={() => completeTodo(todo.id)}
+                      className="complete-button"
+                    >
+                      Complete
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          ))
+        ) : (
+          <p>No unscheduled action items.</p>
+        )}
         
-        <h2>Completed Items</h2>
+        <h3>Completed</h3>
         {completedTodos.length > 0 ? (
           completedTodos.map((todo) => (
             <div className="todo completed" key={todo.id}>
@@ -331,6 +447,12 @@ function App(){
                   className="restore-button"
                 >
                   Restore
+                </button>
+                <button 
+                  onClick={() => removeTodo(todo.id)}
+                  className="clear-button"
+                >
+                  Clear
                 </button>
               </div>
             </div>
