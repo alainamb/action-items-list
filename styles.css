@@ -53,12 +53,26 @@ code {
 .input{
   width: 100%;
   box-sizing: border-box;
-  border: 0;
+  border: 1px solid #ddd;
   border-radius: 4px;
   box-shadow: none;
-  padding: 1rem;
-  height: 2.25em;
-  font-size: 24px;
+  padding: 10px;
+  height: auto;
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #209cee;
+  box-shadow: 0 0 0 2px rgba(32, 156, 238, 0.2);
+}
+
+textarea.input {
+  padding: 10px;
+  line-height: 1.4;
+  min-height: 80px;
+  resize: vertical;
 }
 
 h1 {
@@ -80,6 +94,12 @@ h2 {
   font-size: 22px;
 }
 
+h3 {
+  color: #333;
+  margin: 0 0 15px 0;
+  font-size: 20px;
+}
+
 #root {
   flex: 1;
   width: 100%;
@@ -92,4 +112,51 @@ h2 {
   margin: 0 auto;
   padding: 20px;
   box-sizing: border-box;
+}
+
+/* Form styles */
+.todo-form {
+  background: #fff;
+  padding: 20px;
+  border-radius: 6px;
+  margin-top: 20px;
+  margin-bottom: 30px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-group label {
+  font-weight: bold;
+  color: #555;
+  font-size: 14px;
+  display: block;
+}
+
+.submit-button {
+  background: #209cee;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+  font-family: Arial, sans-serif;
+  transition: background-color 0.2s ease;
+}
+
+.submit-button:hover {
+  background-color: #1992d4;
+}
+
+.submit-button:active {
+  transform: translateY(1px);
 }
